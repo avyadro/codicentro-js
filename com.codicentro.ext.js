@@ -41,6 +41,13 @@ String.prototype.toUtf8 = function(){
 
     }
 }
+/**
+ *  String regex, String replacement
+ */
+String.prototype.replaceAll = function(regex,replacement){ //v1.0
+ // return this.replace(/[_]/gi," "); 
+ return this.replace(new RegExp(regex, 'g'), replacement);
+}
 
 /**
  * Get index If contains value into array object by key
@@ -175,6 +182,7 @@ function LSDOB(d){
  * Extend Objects, simple inheritance
  * @param p Parent Object
  * @param c Child Object
+ * @deprecated
  **/
 function EOSI(p,c){
     function EO(){}
@@ -188,9 +196,54 @@ function EOSI(p,c){
     return new EO();
 }
 
-/*
-* Merge Recursively Properties of Two Objects
-*/
+/**
+ * Merge two or more objects
+ */
+function MRG() {
+    var result = {},
+        length = arguments.length,
+        object = null,
+        key    = null;
+
+    if ( length < 2 ) {
+        throw "Must merge two or more objects";
+    }
+
+    for ( var i=0; i<length; ++i ) {
+        object = arguments[i];
+        for ( var key in object ) {
+            if ( !object.hasOwnProperty(key) ) { continue; }
+            result[key] = object[key];
+        }
+    }
+    return result;
+};
+
+/**
+ * Aggregate two or more objects.
+ */
+function AGG() {
+    if ( length < 2 ) {
+        throw "Must aggregate two or more objects";
+    }
+    // The following can be simplified to 
+    //   return Array.prototype.slice.call(arguments);
+    // but is left in a more explicit manner to illustrate the difference
+    var result = [],
+        length = arguments.length;
+
+    for ( var i=0; i<length; ++i ) {
+        if ( arguments.hasOwnProperty(i) ) {
+            result.push(arguments[i]);
+        }
+    }
+    return result;
+};
+
+
+/**
+ * Merge Recursively Properties of Two Objects
+ */
 function MRPO(obj1, obj2) {
     for (var p in obj2) {
         try {
@@ -225,6 +278,7 @@ function EOMI(o){
     return new EO();
 }
 
+    
 /*
 Object.extend(Array.prototype, {
     intersect: function(array){
@@ -262,7 +316,7 @@ Array.prototype.contain = function (key,value) {
 /**
  * Contains any value into array object by any key
  **/
-Array.prototype.containsA = function (key,value) {    
+Array.prototype.containsA = function (key,value) {	
     for (var i = 0; i < this.length; i++){
         tmp = true;
         for(var k = 0;k <key.length; k++){
@@ -273,6 +327,19 @@ Array.prototype.containsA = function (key,value) {
         }
     }
     return false;
+};
+
+/**
+ * Contains any value into array object by any key
+ **/
+Array.prototype.containsB = function (key,value) {	
+	this.matched = false;
+	this.idx	 = 0;
+	while((!this.matched)&&(this.idx<this.length)){
+		this.matched = this[this.idx][key] == value;
+		this.idx++;
+	}
+    return this.matched;
 };
 
 Array.prototype.remove=function(element){
@@ -291,7 +358,6 @@ Array.prototype.remove=function(element){
  */
 function msgFailure(msg,fn){
     Ext.MessageBox.show({
-        minWidth:400,
         title: lng.window.title.error,
         msg: msg,
         buttons: Ext.MessageBox.OK,
@@ -376,7 +442,7 @@ Ext.lib.Ajax.syncRequest = function(method, uri, callback, postData)
 function COPSP(p){
     copsp = "";
     for (x in p){
-        copsp +=((copsp=="")?"":"&")+x+"="+p[x];
+        copsp +=((copsp=="")?"":"&")+x+"="+( ((typeof p[x]=='undefined')||(p[x]==null))?"":p[x]);
     }
     return copsp;
 }
@@ -398,17 +464,19 @@ function DOFI(url){
     iframe.id=GUID();
     iframe.name=iframe.id;
     iframe.style.display = "none";
-    /* iframe.onload = function(){
-        setTimeout(function(){
-            Ext.MessageBox.hide();
-            Ext.removeNode(iframe);
-        },100);
-    };*/
+    
+    if(Ext.isIE){
+	  iframe.onreadystatechange=function(){
+		Ext.MessageBox.hide();
+	  };
+	}else{
+	  iframe.onload=function(){
+		Ext.MessageBox.hide();
+	  };
+	}
+	
     iframe.src=url;
-    document.body.appendChild(iframe);
-    setTimeout(function(){
-        Ext.MessageBox.hide();
-    },500);
+    document.body.appendChild(iframe);    
 }
 /**
  * Embed url into Panel
