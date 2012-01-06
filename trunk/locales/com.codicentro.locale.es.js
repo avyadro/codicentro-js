@@ -22,7 +22,9 @@ lng={
             saving:"Guardando...",
             deleting:"Borrando...",
             authorizing:"Autorizando...",
-            downloading:"Descargando..."
+            downloading:"Descargando...",
+            validating:"Validando...",
+            checking:"Verificando..."
         }
     }
 }

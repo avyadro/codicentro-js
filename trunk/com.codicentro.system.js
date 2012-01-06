@@ -35,10 +35,10 @@ File = function File(cfg){
                     async:false,
                     dataType:"script",
                     ajaxError:function(rs){
-                        msgFailure(RT(rs));
+                        msgFailure(ATSWE(rs));
                     },
                     error:function(rs){
-                        msgFailure(RT(rs));
+                        msgFailure(ATSWE(rs));
                     }
                 });    
             }                    
@@ -55,7 +55,7 @@ File = function File(cfg){
                 dataType:"script",
                 autoSubmit:true
             });
-            if(!ajax.error)eval(ajax.response);
+            if(!ajax.error){msgFailure(ATSWE(ajax));}
             break;     
     }
 }
@@ -71,11 +71,11 @@ $.ajax({
 	dataType	: "script",
 	url			: url,
 	data		: null,
-	fn			: function(){ alert("fn"); },
-	ajaxError	: function(rs){	alert("ajaxError"); },
-	error		: function(rs){	alert("error");	},
-	failed		: function(){ alert("failed"); },
-	success		: function(){
+	fn			: function(a,b,c){ msgFailure("fn::"+ATSWE(a)); },
+	ajaxError	: function(a,b,c){ msgFailure("ajaxError::"+ATSWE(a)); },
+	error		: function(a,b,c){ msgFailure(ATSWE(a)); },
+	failed		: function(a,b,c){ msgFailure("failed::"+ATSWE(a)); },
+	success		: function(a,b,c){
 					if(typeof fnc!="undefined"){
 						fnc(own);
 					}

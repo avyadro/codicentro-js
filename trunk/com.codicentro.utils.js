@@ -13,6 +13,33 @@
  * 1.0.0       Jan 01, 2008           Alexander Villalobos Yadró      New class.
  **/
 
+/**
+ * Global Increment Unique Number
+ */
+var GInq=1;
+
+/**
+ * Global Decrement Unique Number
+ */
+var GDnq=999999999999999;
+
+/**
+ * Global Increment Unique Number
+ */
+function GIun(){
+ GInq++;
+ return GInq;	
+}
+
+/**
+ * 
+ */
+function GDun(){
+ GDnq--;
+ return GDnq;	
+}
+
+
 function ltrim(s) {
     return s.replace(/^\s+/, "");
 }
@@ -54,18 +81,18 @@ function IND(o){
     }
 
 }
-/*================================================
-  Array Text String Without Eval
-==================================================*/
-function ATSWE(rs){
-    for(i=0;i<rs.message.length;i++){
-        tmpStr = rs.message[i];
-        tmpStr = (tmpStr==null)?"":tmpStr;
-        res+=(res=="")?tmpStr:"\n"+tmpStr;
-    }
-    delete tmpStr;
-    return res;
-}
+
+/**
+ * Replace All
+ * String txt, Text
+ * String rgx, Regex
+ * String rpl, Replacement
+ */
+ function RALL(txt,rgx,rpl){
+  return txt.replace(new RegExp(rgx, 'g'), rpl);
+ }
+ 
+
 /**
  * Response Text JSON to Object
  */
@@ -84,42 +111,87 @@ function RT(rs){
  * Jonson Eval
  */
 function JE(v){
-    if (v==null){
-        return null;
-    }else{
-        return eval('(' +  v + ')');
-    }
+ try{
+		return eval('(' +  v + ')');
+    }catch(err){
+		return;
+    } 
 }
-
-
-/*================================================
-  Array Text String With Eval
-==================================================*/
-function ATSHE(rs){	
-    res = "";
-    if(rs){
-    for(i=0;i<rs.message.length;i++){
-        tmpStr = rs.message[i];
-        tmpStr = (tmpStr==null)?"":tmpStr;
-        try{
-            tmpStr = eval(tmpStr);
-            if(typeof tmpStr=="undefined"){
+/**
+  Array Text String Without Eval
+*/
+function ATSWE(rs){
+    if(rs==null){
+		return "Method: ATSWE(Array Text String Without Eval), File: com.codicentro.utils.js:: Var 'rs' is null."; 
+	}
+    if((rs.result!=null && rs.result.message!=null)||(rs.message!=null)){
+		rs = (rs.result!=null)?rs.result:rs;
+		rs = rs.result;
+		if(rs.message instanceof Array){
+			res = "";
+			for(i=0;i<rs.message.length;i++){
 				tmpStr = rs.message[i];
+				tmpStr = (tmpStr==null)?"":tmpStr;
+				res+=(res=="")?tmpStr:"\n"+tmpStr;
 			}
-        }catch(err){
-            tmpStr = rs.message[i];
-        }
-        res+=(res=="")?tmpStr:"\n"+tmpStr;
-    }
-    delete tmpStr;
-}else{
-	 res = "Method: ATSHE(Array Text String With Eval), File: com.codicentro.utils.js"; 
+			delete tmpStr;
+			return res;
+		}else{
+			return rs.message;			
+		}
+	}else if(rs.response!=null&&rs.response.responseText!=null){
+		 return rs.response.responseText;
+	}else if(rs.responseText!=null){
+		return rs.responseText;
+	}else{
+		return "Method: ATSWE(Array Text String Without Eval), File: com.codicentro.utils.js:: Unrecognized response type.";	   
+	}    
 }
-    return res;
+
+/**
+  Array Text String With Eval
+*/
+function ATSHE(rs){
+    if(rs==null){
+		return "Method: ATSHE(Array Text String With Eval), File: com.codicentro.utils.js:: Var 'rs' is null."; 
+	}
+    if((rs.result!=null && rs.result.message!=null)||(rs.message!=null)){
+		rs = (rs.result!=null)?rs.result:rs;		
+		if(rs.message instanceof Array){
+			res = "";
+			for(i=0;i<rs.message.length;i++){
+				tmpStr = rs.message[i];
+				tmpStr = (tmpStr==null)?"":tmpStr;
+				try{
+					tmpStr = eval(tmpStr);
+					if(typeof tmpStr=="undefined"){
+						tmpStr = rs.message[i];
+					}
+				}catch(err){
+					tmpStr = rs.message[i];
+				}
+				res+=(res=="")?tmpStr:"\n"+tmpStr;
+			}
+			delete tmpStr;
+			return res;
+		}else{
+			try{			
+			return eval(rs.message);
+		}catch(err){
+		 return rs.message;	
+		}			
+		}		
+	}else if(rs.response!=null&&rs.response.responseText!=null){
+		 return rs.response.responseText;
+	}else if(rs.responseText!=null){
+		return rs.responseText;
+	}else{
+		return "Method: ATSHE(Array Text String With Eval), File: com.codicentro.utils.js:: Unrecognized response type.";	   
+	}    
 }
-/*================================================
+/**
   Response Array Text String
-==================================================*/
+*/
 function ATS(rs){
     return ATSWE(rs.message);
 }
@@ -130,9 +202,9 @@ function CATSE(rs){
     return ATSWE(rs.error);
 }
 
-/*================================================
+/**
   Response Array Text String By Information
-==================================================*/
+*/
 function ATSI(rs){
     return ATSHE(rs.information);
 }
@@ -142,9 +214,9 @@ function ATSI(rs){
 function CATSI(rs){
     return ATSHE(rs.information);
 }
-/*================================================
+/**
   Response Array Length by Error
-==================================================*/
+*/
 function ATLE(rs){
     return rs.error.length;
 }
@@ -157,16 +229,16 @@ function CATLE(rs){
     return rs.error.length;
 }
 
-/*================================================
+/**
   Response Data
-==================================================*/
+*/
 function RD(rs){
     return rs.data;
 }
 
-/*================================================
+/**
   Response Array Length by information
-==================================================*/
+*/
 function ATLI(rs){
     return rs.information.length;
 }
@@ -227,15 +299,15 @@ function FHG(o){
     }*/
     return "<p align=\""+o["align"]+"\">"+o["value"]+"</p>";
 }
-/*================================================
+/**
   Return object by ID
-==================================================*/
+*/
 function GExID(id){
     return document.getElementById(id);
 }
-/*================================================
+/**
   Load Java Script Source
-==================================================*/
+*/
 function LJSS(_url_){
     $.ajax({
         url:_url_,
@@ -249,9 +321,9 @@ function LJSS(_url_){
         }
     });
 }
-/*================================================
+/**
   Screen Center Window
-==================================================*/
+*/
 function SCW(o){
  try{
 	if(typeof o.parent=="undefined"){
@@ -259,8 +331,7 @@ function SCW(o){
 	  ph = o.wnd.getSize().height;  	
 	}else{
 	  pw = o.parent.wnd.getSize().width;
-	  ph = o.parent.wnd.getSize().height;  		
-	 // console.log(o.parent.getPosition());
+	  ph = o.parent.wnd.getSize().height;
 	 
 	}
 		
@@ -273,11 +344,11 @@ function SCW(o){
 	 alert("SCW: "+err);
  }
 }
-/*================================================
+/**
   Screen Center Window
   * @param w, Window
   * @param p, Window parent
-==================================================*/
+*/
 function SCWE(w,p,yy){
  try{
 	if(typeof p=="undefined"){
@@ -296,9 +367,9 @@ function SCWE(w,p,yy){
 	 alert("SCWE: "+err+", w: "+w+", p: "+p);
  }
 }
-/*================================================
+/**
   Screen Center Window Move Y
-==================================================*/
+*/
 function SCWY(o,v){
  try{
 	if(typeof o.parent=="undefined"){
@@ -318,9 +389,9 @@ function SCWY(o,v){
 	 alert("SCW: "+err);
  }
 }
-/*================================================
+/**
   Return object by property NAME
-==================================================*/
+*/
 function GExNM(id){
     result = null;
     o = document.getElementsByName(id);    
@@ -328,44 +399,52 @@ function GExNM(id){
         result = (o[i].objectName==id)?o[i]:null;   
     return result;
 }
-/*================================================
+/**
   Set value a object by ID
-==================================================*/
+*/
 function AVxNM(id,v){
     GExNM(id).value=v;
 }
-/*================================================
+/**
   Return object by property TagName
-==================================================*/
+*/
 function GExTN(id){
     return document.getElementsByTagName(id);
 }
-/*================================================
+/**
   Set disabled/enabled object
-==================================================*/
+*/
 function SD(id,v){
     GExID(id).disabled=v;
 }
 
-/*================================================
+/**
   Document Write
-==================================================*/
+*/
 function DW(o){
     document.write(o);
 }
-/*================================================
+/**
   Document Create Element
-==================================================*/
+*/
 function DCE(o){
     document.write(o);
 }
 
 
-/**
-  * Grid Store Data
+/** 
+ * Get Component Store Data
+ * 
  **/
 function GSD(g){
     return  g.store.data;
+}
+/**
+ *  Get component store data value
+ *
+ */
+function GSDV(c,idx){
+    return  GSD(c).get(idx).data;
 }
 
 /**
@@ -523,7 +602,7 @@ function TDWA(t,k,f){
  * Is Grid Data Empty?
  */
 
-function GDE(GRID){
+function GDE(GRID){		
     return  (GRID.store.data.length<1);
 }
 
@@ -534,9 +613,9 @@ function GDE(GRID){
 function GIMB(mb,key){
     return mb.menu.items.get(key);
 }
-/*================================================
+/**
    Get Array List selections Grid
-==================================================*/
+*/
 function GALSG(GRID){
     delete result;
     result = null;
@@ -557,9 +636,9 @@ function GALSG(GRID){
     return  result;
 }
 
-/*================================================
+/**
    Get Value Array List selections Grid By Property
-==================================================*/
+*/
 function GVALSG(GRID,P){
     //  otmp = null;
     o = GALSG(GRID);
@@ -614,19 +693,38 @@ function OGRS(GRID){
 }
 
 /**
- * Get Row Select Grid
+ * Get Data Row Select Grid
+ * Ext.grid g
+ * @deprecated
  */
-function GRSG(GRID){
-	if(GRS(GRID)){
-		if(typeof GRID.getSelectionModel().getSelected!="undefined"){
-			return GRID.getSelectionModel().getSelected().data;
+function GRSG(g){
+	if(GRS(g)){
+		if(typeof g.getSelectionModel().getSelected!="undefined"){
+			return g.getSelectionModel().getSelected().data;
 		}else{
-			return GRID.getSelectionModel().selection.record.data;
+			return g.getSelectionModel().selection.record.data;
 		}
 	}else{
 		return null;
 	}
 }
+
+/**
+ * Get Selected Row Grid
+ * 
+ */
+function GSRG(g){
+	if(GRS(g)){
+		if(typeof g.getSelectionModel().getSelected!="undefined"){
+			return g.getSelectionModel().getSelected();
+		}else{
+			return g.getSelectionModel().selection.record;
+		}
+	}else{
+		return null;
+	}
+}
+
 
 /**
  * Get Rows Selections Grid
@@ -658,9 +756,9 @@ function PMF(dr){
     }
 }
 
-/*================================================
+/**
    Verif and return result
-==================================================*/
+*/
 function VR(rs,rq,fn){
     if((rs)&&(rs.responseText!=null)){
         rs = eval("("+rs.responseText+")");
@@ -684,17 +782,17 @@ function VR(rs,rq,fn){
 }
 
 
-/*================================================
+/**
    Get Value by Fields Name (Ext.data.Record)
-==================================================*/
+*/
 function GVxFN(rcrd,fld){    
     return  (rcrd==null)?null:rcrd.get(fld);
 }
 
 
-/*================================================
+/**
    Convert Html to String special chars
-==================================================*/
+*/
 function CHS(s){
     s=s.replace("&aacute;","???");
     s=s.replace("&eacute;","???");
@@ -711,9 +809,9 @@ function CHS(s){
     s=s.replace("&iexcl;","???");
     return s;
 }
-/*================================================
+/**
    Convert String to Html special chars
-==================================================*/
+*/
 function CSH(s){
     s=s.replace("???","&aacute;");
     s=s.replace("???","&eacute;");
@@ -735,17 +833,26 @@ function CSH(s){
 function NVL(v,r){
     return (((v==null)||(v==""))?r:v);
 }
-/*================================================
-   Verif Param (this.param)
-   o: Object params
-   c: Property name
-==================================================*/
+
+/**
+ * Decode,
+ * Condition, boolean
+ */
+function DCD(b,r){
+    return (((v==null)||(v==""))?r:v);
+}
+
+/**
+ * Verif Param (this.param)
+ * o: Object params
+ * c: Property name
+ */
 function VP(o,c){
     return ((o==null)||(o[c]==null))?null:o[c];
 }
-/*================================================
+/**
    Convert Object to Boolean
-==================================================*/
+*/
 function COB(v){
     return  (v!=null)&&((v=="Y"))
 }
@@ -786,7 +893,7 @@ function FDMY(m, y) {
  * If TabPanel then active tab else add new tab and activate.
  *  
  */
-function ADT(cfg){
+function ADT2(cfg){
 	cfg.id = "adtTabId"+cfg.id;	
     TabPanel = Ext.getCmp("mainTabPanel");
     if(typeof TabPanel == "undefined"){
@@ -813,6 +920,36 @@ function ADT(cfg){
         }        
     }
 }
+
+function ADT(own,cfg){
+    cfg.id = "adtTabId"+cfg.id;
+    if(typeof own == "undefined"){
+        Ext.MessageBox.show({
+            title: "Error",
+            msg: "No existe el parametro own.",
+            buttons: Ext.MessageBox.OK,
+            icon:Ext.MessageBox.ERROR
+        });
+    }else{
+        ItemTabPanel = own.getItem(cfg.id);
+        if(typeof ItemTabPanel!="undefined"){
+            ItemTabPanel.show();
+        }else{
+            if(typeof cfg.inc!="undefined"){
+                Inc(cfg.inc.url,function(){
+                    ItemTabPanel=own.add(cfg).show();
+                    NewObject = eval(cfg.inc.name);
+                    new NewObject({
+                        own:ItemTabPanel
+                    });
+                });
+            }else{
+                own.add(cfg).show();
+            }
+        }
+    }
+}
+
 /**
  * Count Not Blank Values Into Object
  * o, Objects 
@@ -824,3 +961,102 @@ function nNBV(o){
   }
   return rsNBV;
 }
+
+/**
+ * inc/dec days
+ * d, Date
+ * n, +/- days
+ */
+function DID(d,n) {  
+  rs = new Date();
+  rs.setTime( d.getTime() + n*24*60*60*1000 );
+  return rs;
+}
+
+/**
+ * to Date
+ */
+function toD(n) {
+  if(typeof n=='undefined' || n==null){
+	return null;
+  }
+  rs = new Date();
+  rs.setTime(n);
+  return rs;
+}
+/**
+ * to Date Width Format
+ */
+function toDF(n,f) {
+  rs = toD(n);
+  if(rs==null){
+	return null;
+  }
+  return rs.format(f);
+}  
+
+/**
+ * String prefix
+ * String complete
+ * int size
+ * String alignment, RIGHT or LEFT, LEFT is optionally
+ * Object value
+ */
+function CompleteString(prefix,complete,size,alignment,value){
+  if((typeof value=='undefined')||(value==null)){
+	  return null;
+  }
+  var valueString = value.toString();
+  var lCompleteString = ((size < valueString.length) ? valueString.length : size) - valueString.length;	
+  for(idxCompleteString=0;idxCompleteString<lCompleteString;idxCompleteString++){
+	switch(alignment){
+	 case "RIGHT":
+	   valueString = valueString.concat(complete);
+	 break;
+	 default:
+	   valueString = complete.concat(valueString);
+	 break;
+	}  
+  }
+  delete lCompleteString;
+  delete idxCompleteString;
+  return ((typeof prefix=='undefined'||prefix==null)?"":prefix)+valueString;
+}
+
+
+
+/**
+ * Object Style Position
+ * e, Event
+ */
+function OSP(e){
+    var ev=e || window.event;
+    var obj=ev.target || ev.srcElement;
+    obj.style.position='relative'; 
+    posX=ev.layerX || ev.offsetX || 0;
+    posY=ev.layerY || ev.offsetY || 0;
+    return {x:posX,y:posY};
+} 
+
+function MsgTips(title, format){
+/*** PRIVATE DECLARATION ***/	
+function createBox(t, s){
+	return ['<div class="msg">',
+			'<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
+			'<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc"><h3>', t, '</h3>', s, '</div></div></div>',
+			'<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
+			'</div>'].join('');
+}
+if(typeof msgCt=='undefined'){
+                msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
+            }
+            msgCt.alignTo(document, 't-t');
+            var s = String.format.apply(String, Array.prototype.slice.call(arguments, 1));
+            var m = Ext.DomHelper.append(msgCt, {html:createBox(title, s)}, true);
+            m.slideIn('t').pause(2.5).ghost("t", {remove:true});	
+}
+
+
+
+
+
