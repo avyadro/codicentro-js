@@ -48,7 +48,8 @@ function isNull(val){return(val==null);}
 //   Returns true if value only contains spaces
 //-------------------------------------------------------------------
 function isBlank(val){
-	if(val==null){return true;}
+	if(typeof val=='undefined'||val==null){return true;}
+	val = val.toString();
 	for(var i=0;i<val.length;i++) {
 		if ((val.charAt(i)!=' ')&&(val.charAt(i)!="\t")&&(val.charAt(i)!="\n")&&(val.charAt(i)!="\r")){return false;}
 		}

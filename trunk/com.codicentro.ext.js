@@ -18,10 +18,18 @@
  * Jonas Raoni Soares Silva
  * http://jsfromhell.com/string/capitalize [v1.0] 
  **/
-String.prototype.capitalize = function(){ //v1.0
-    return this.replace(/\w+/g, function(a){
-        return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
-    });
+//String.prototype.capitalize = function(){ //v1.0
+//    return this.replace(/\w+/g, function(a){
+//        return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
+//    });
+//};
+//+ Jonas Raoni Soares Silva
+//@ http://jsfromhell.com/string/capitalize [rev. #2]
+
+String.prototype.capitalize = function(){
+	return this.replace(/\S+/g, function(a){
+		return a.charAt(0).toUpperCase() + a.slice(1).toLowerCase();
+	});
 };
 /**
  * Standar Name Property
@@ -53,9 +61,9 @@ String.prototype.replaceAll = function(regex,replacement){ //v1.0
  * Get index If contains value into array object by key
  **/
 Array.prototype.GIC = function (key,value) {
-    this.index = -1;
-    for (var i = 0; ((i < this.length)&&(this.index==-1)); i++){ 
-        if (this[i][key] == value){
+    this.index=-1;
+    for(var i=0;(i<this.length&&this.index==-1);i++){ 
+        if (this[i][key]==value){
             this.index=i;
         }
     }
@@ -67,12 +75,12 @@ Array.prototype.GIC = function (key,value) {
  * Array Object value [{key:key,value:value},...]
  *
  **/
-Array.prototype.GICO = function (o) {
-    this.index = -1;
-    for (var i = 0; ((i < this.length)&&(this.index==-1)); i++){
+Array.prototype.GICO = function(o) {
+    this.index=-1;
+    for (var i=0;(i<this.length&&this.index==-1);i++){
         this.matchOV = true;
-        for (var j = 0; j < o.length; j++){
-            this.matchOV = ((this.matchOV) && (this[i][o[j].key]==o[j].value));
+        for (var j=0;j<o.length;j++){
+            this.matchOV=(this.matchOV&&this[i][o[j].key]==o[j].value);
         }      
         this.index=(this.matchOV)?i:-1;
     }
@@ -98,12 +106,10 @@ function ESUO(v,e) {
     var utftext = "";
     for (var n = 0; n < v.length; n++) {
         var c = v.charCodeAt(n);
-        if (c < 128) {
-            utftext += String.fromCharCode(c);
-        }
-        else
-        {
-            utftext += ((e==null)?"":e)+c.toString(8);
+        if(c<128) {
+            utftext+=String.fromCharCode(c);
+        }else{
+            utftext+=((e==null)?"":e)+c.toString(8);
         }
     }
     return utftext;
@@ -245,6 +251,9 @@ function AGG() {
  * Merge Recursively Properties of Two Objects
  */
 function MRPO(obj1, obj2) {
+	if(typeof obj1=='undefined'){		
+		return obj2;
+	}else{
     for (var p in obj2) {
         try {
             // Property in destination object set; update its value.
@@ -253,12 +262,13 @@ function MRPO(obj1, obj2) {
             } else {
                 obj1[p] = obj2[p];
             }
-        } catch(e) {
+        } catch(e) {			
             // Property in destination object not set; create it and set its value.
             obj1[p] = obj2[p];
         }
     }
     return obj1;
+ }
 }
 
 
@@ -288,6 +298,8 @@ Object.extend(Array.prototype, {
     }
 });
  */
+ 
+
 
 /**
  * Contains element into array object 
@@ -447,36 +459,43 @@ function COPSP(p){
     return copsp;
 }
 
+/**
+ * @deprecated
+ **/
 function DOFI(url){
-    Ext.MessageBox.show({
-        title:lng.msg.information.waiting,
-        msg: lng.msg.information.downloading,
-        width:300,
-        wait:true,
-        hide:true,
-        visible:true,
-        waitConfig: {
-            interval:200
-        },
-        icon:'ext-mb-download'
-    });
-    iframe = document.createElement("iframe");
-    iframe.id=GUID();
-    iframe.name=iframe.id;
-    iframe.style.display = "none";
-    
-    if(Ext.isIE){
-	  iframe.onreadystatechange=function(){
-		Ext.MessageBox.hide();
-	  };
-	}else{
-	  iframe.onload=function(){
-		Ext.MessageBox.hide();
-	  };
-	}
-	
-    iframe.src=url;
-    document.body.appendChild(iframe);    
+   // CJSUtil.download(url,true);
+   Ext.MessageBox.show({
+				title:lng.msg.information.waiting,
+				msg: lng.msg.information.processing,
+				width:300,
+				wait:true,
+				hide:true,
+				visible:true,
+				waitConfig: {
+					interval:200
+				},
+				icon:'ext-mb-download'
+			});
+			iframe = document.createElement('iframe');
+			iframe.id=GUID();
+			iframe.name=iframe.id;
+			iframe.style.display = 'none';
+			if(Ext.isIE){
+				  iframe.onreadystatechange=function(){
+						//document.body.removeChild(iframe);
+						iframe=null;
+						Ext.MessageBox.hide();
+				  };
+				}else {
+							iframe.onload = function() {
+							//document.body.removeChild(iframe);
+							iframe=null;
+							Ext.MessageBox.hide();
+						};
+				}
+			iframe.src=url;
+			document.body.appendChild(iframe);
+   
 }
 /**
  * Embed url into Panel
@@ -577,3 +596,18 @@ function GPU(own,url,target){
 	 return target;
  }
 }
+
+Date.fromISOString = (function(){
+  var tzoffset = (new Date).getTimezoneOffset();
+  function fastDateParse(y, m, d, h, i, s, ms){ // this -> tz
+    return new Date(y, m - 1, d, h || 0, +(i || 0) - this, s || 0, ms || 0);
+  }
+
+  // result function
+  return function(isoDateString){
+    var tz = isoDateString.substr(10).match(/([\-\+])(\d{1,2}):?(\d{1,2})?/) || 0;
+    if (tz)
+      tz = tzoffset + (tz[1] == '-' ? -1 : 1) * (tz[3] != null ? +tz[2] * 60 + (+tz[3]) : +tz[2]);
+    return fastDateParse.apply(tz || 0, isoDateString.split(/\D/));
+  }
+})();

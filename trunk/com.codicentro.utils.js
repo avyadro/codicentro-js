@@ -181,8 +181,8 @@ function ATSHE(rs){
 		 return rs.message;	
 		}			
 		}		
-	}else if(rs.response!=null&&rs.response.responseText!=null){
-		 return rs.response.responseText;
+	}else if(rs.response!=null&&rs.response.responseText!=null&&JE(rs.response.responseText).message!=null){
+		 return JE(rs.response.responseText).message;
 	}else if(rs.responseText!=null){
 		return rs.responseText;
 	}else{
@@ -963,6 +963,18 @@ function nNBV(o){
 }
 
 /**
+ * Optional list not blank
+ *  OLNB
+ **/
+function isOLNB(o){ 	
+  rsNBV = true;
+  for(x in o){
+	  rsNBV = rsNBV&&!isBlank(o[x]);
+  }
+  return rsNBV;
+}
+
+/**
  * inc/dec days
  * d, Date
  * n, +/- days
@@ -976,8 +988,9 @@ function DID(d,n) {
 /**
  * to Date
  */
-function toD(n) {
-  if(typeof n=='undefined' || n==null){
+function toD(n) {  
+  n = new String(n);
+  if(typeof n=='undefined'||n==null||isBlank(n)||isNaN(n)){
 	return null;
   }
   rs = new Date();
@@ -986,8 +999,19 @@ function toD(n) {
 }
 /**
  * to Date Width Format
+ * Format 	Description 												Example
+ * d 		The CultureInfo shortDate Format Pattern 					"M/d/yyyy"
+ * D 		The CultureInfo longDate Format Pattern 					"dddd, MMMM dd, yyyy"
+ * F 		The CultureInfo fullDateTime Format Pattern 				"dddd, MMMM dd, yyyy h:mm:ss tt"
+ * m 		The CultureInfo monthDay Format Pattern 					"MMMM dd"
+ * r 		The CultureInfo rfc1123 Format Pattern 						"ddd, dd MMM yyyy HH:mm:ss GMT"
+ * s 		The CultureInfo sortableDateTime Format Pattern 			"yyyy-MM-ddTHH:mm:ss"
+ * t 		The CultureInfo shortTime Format Pattern 					"h:mm tt"
+ * T 		The CultureInfo longTime Format Pattern 					"h:mm:ss tt"
+ * u 		The CultureInfo universalSortableDateTime Format Pattern 	"yyyy-MM-dd HH:mm:ssZ"
+ * y 		The CultureInfo yearMonth Format Pattern 					"MMMM, yyyy" 
  */
-function toDF(n,f) {
+function toDF(n,f) { 
   rs = toD(n);
   if(rs==null){
 	return null;
@@ -1056,7 +1080,32 @@ if(typeof msgCt=='undefined'){
             m.slideIn('t').pause(2.5).ghost("t", {remove:true});	
 }
 
+function PopupCenter(pageURL, title,w,h) {
+var left = (screen.width/2)-(w/2);
+var top = (screen.height/2)-(h/2);
+window.open(pageURL, title, 'titlebar=no, toolbar=no, locationbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width='+w+', height='+h+', top='+top+', left='+left);
+} 
 
+/**
+ * Set Visible Element 
+ * e, Element
+ * b. boolean 
+ */
+function SVE(e,b){
+   e.style.display=(b)?'block':'none'; 	
+}
 
+function nextObject(obj) {
+	var n = obj;
+	do n = n.nextSibling;
+	while (n && n.nodeType != 1);
+	return n;
+}
 
+function previousObject(obj) {
+	var p = obj;
+	do p = p.previousSibling;
+	while (p && p.nodeType != 1);
+	return p;
+} 
 
