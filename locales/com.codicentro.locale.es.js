@@ -24,8 +24,9 @@ lng={
             authorizing:"Autorizando...",
             downloading:"Descargando...",
             validating:"Validando...",
-            checking:"Verificando..."
+            checking:"Verificando...",
+            processing:'Procesando...',
+            uploading:'Subiendo...'
         }
     }
 }
-
