@@ -1600,6 +1600,12 @@ CJSUtil = new Object({
         }
         return suggest;
     },
+    /**
+     * 
+     * @param {type} n
+     * @param {type} s
+     * @returns {Array|net.codicentro.utils-v2.0.0Anonym$11.gup.p|String}
+     */
     gup: function (n, s) {
         n = n.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
         var p = (new RegExp("[\\?&]" + n + "=([^&#]*)")).exec(s);
